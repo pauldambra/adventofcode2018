@@ -5,6 +5,8 @@ plugins {
 group 'com.dambra.adventofcode2018'
 version '0.0.0'
 
+apply plugin: 'jacoco'
+
 repositories {
     mavenCentral()
 }
@@ -30,3 +32,12 @@ compileKotlin {
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
+
+check.dependsOn jacocoTestReport
