@@ -8,9 +8,7 @@ internal class PuzzleInputs {
     @Test
     fun `part one`() {
         val result = javaClass.getResourceAsStream("/day1Part1Input.txt").bufferedReader()
-            .useLines {
-            it.resultingFrequency()
-        }
+            .useLines(Sequence<String>::resultingFrequency)
 
         assertThat(result).isEqualTo(533)
     }
@@ -18,9 +16,7 @@ internal class PuzzleInputs {
     @Test
     fun `part two`() {
         val result = javaClass.getResourceAsStream("/day1Part1Input.txt").bufferedReader()
-            .useLines {
-                it.firstRepeatedFrequency()
-            }
+            .useLines(Sequence<String>::firstRepeatedFrequency)
 
         assertThat(result).isEqualTo(73272)
     }
