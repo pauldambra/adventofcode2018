@@ -94,3 +94,5 @@ hs_err_pid*
 /build/test-results/
 /.gradle/buildOutputCleanup/buildOutputCleanup.lock
 /build/jacoco/test.exec
+/.gradle/4.8/taskHistory
+/.gradle/4.8/fileHashes

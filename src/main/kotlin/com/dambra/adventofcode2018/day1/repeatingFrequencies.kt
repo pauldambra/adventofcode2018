@@ -2,14 +2,14 @@ package com.dambra.adventofcode2018.day1
 
 import java.lang.Exception
 
-private fun <T> Sequence<T>.repeat() = sequence { while (true) yieldAll(this@repeat) }
+private fun <T> List<T>.repeat() = sequence { while (true) yieldAll(this@repeat) }
 
-fun List<String>.firstRepeatedFrequency(): Int {
+fun Sequence<String>.firstRepeatedFrequency(): Int {
 
     var frequency = 0
     val seen = mutableSetOf(0)
 
-    this.asSequence().repeat()
+    this.toList().repeat()
         .map { it: String -> it.toInt() }
         .forEach {
             val next = frequency + it

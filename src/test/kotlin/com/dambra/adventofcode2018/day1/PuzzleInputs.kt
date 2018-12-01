@@ -5,24 +5,22 @@ import org.junit.jupiter.api.Test
 
 internal class PuzzleInputs {
 
-    private val puzzleInput = PuzzleInputs::class.java.getResource("/day1Part1Input.txt")
-
     @Test
     fun `part one`() {
-        val result = puzzleInput
-            .readText()
-            .split("\n")
-            .resultingFrequency()
+        val result = PuzzleInputs::class.java.getResourceAsStream("/day1Part1Input.txt").bufferedReader()
+            .useLines {
+            it.resultingFrequency()
+        }
 
         assertThat(result).isEqualTo(533)
     }
 
     @Test
     fun `part two`() {
-        val result = puzzleInput
-            .readText()
-            .split("\n")
-            .firstRepeatedFrequency()
+        val result = PuzzleInputs::class.java.getResourceAsStream("/day1Part1Input.txt").bufferedReader()
+            .useLines {
+                it.firstRepeatedFrequency()
+            }
 
         assertThat(result).isEqualTo(73272)
     }
