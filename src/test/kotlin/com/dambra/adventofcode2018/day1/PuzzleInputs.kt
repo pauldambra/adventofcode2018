@@ -7,7 +7,7 @@ internal class PuzzleInputs {
 
     @Test
     fun `part one`() {
-        val result = javaClass.getResourceAsStream("/day1Part1Input.txt")
+        val result = javaClass.getResourceAsStream("/day1/day1Part1Input.txt")
             .bufferedReader()
             .useLines(Sequence<String>::resultingFrequency)
 
@@ -16,7 +16,7 @@ internal class PuzzleInputs {
 
     @Test
     fun `part two`() {
-        val result = javaClass.getResourceAsStream("/day1Part1Input.txt")
+        val result = javaClass.getResourceAsStream("/day1/day1Part1Input.txt")
             .bufferedReader()
             .useLines(Sequence<String>::firstRepeatedFrequency)
 
