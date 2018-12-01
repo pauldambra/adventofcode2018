@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.dambra.adventofcode2018.day1.PuzzleInputs" tests="2" skipped="0" failures="0" errors="0" timestamp="2018-12-01T13:50:20" hostname="Pauls-MacBook-Pro-2.local" time="0.129">
-  <properties/>
-  <testcase name="part one()" classname="com.dambra.adventofcode2018.day1.PuzzleInputs" time="0.05"/>
-  <testcase name="part two()" classname="com.dambra.adventofcode2018.day1.PuzzleInputs" time="0.078"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

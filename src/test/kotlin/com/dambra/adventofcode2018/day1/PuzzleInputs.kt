@@ -4,9 +4,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class PuzzleInputs {
+
+    private val puzzleInput = PuzzleInputs::class.java.getResource("/day1Part1Input.txt")
+
     @Test
     fun `part one`() {
-        val result = this.javaClass.getResource("/day1Part1Input.txt")
+        val result = puzzleInput
             .readText()
             .split("\n")
             .resultingFrequency()
@@ -16,7 +19,7 @@ internal class PuzzleInputs {
 
     @Test
     fun `part two`() {
-        val result = this.javaClass.getResource("/day1Part1Input.txt")
+        val result = puzzleInput
             .readText()
             .split("\n")
             .firstRepeatedFrequency()
