@@ -13,4 +13,14 @@ internal class PuzzleInputs {
 
         assertThat(result).isEqualTo(533)
     }
+
+    @Test
+    fun `part two`() {
+        val result = this.javaClass.getResource("/day1Part1Input.txt")
+            .readText()
+            .split("\n")
+            .firstRepeatedFrequency()
+
+        assertThat(result).isEqualTo(73272)
+    }
 }
