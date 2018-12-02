@@ -14,7 +14,6 @@ fun String.findLetterFrequency() = sequenceOf(this).findLetterFrequency().first(
 
 fun Sequence<String>.findLetterFrequency() =
     this.map {
-        println("processing $it")
         it.groupingBy { c -> c }.eachCount()
             .filter { x -> x.value == 2 || x.value == 3 }
             .entries
