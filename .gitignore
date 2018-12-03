@@ -96,3 +96,5 @@ hs_err_pid*
 /build/jacoco/test.exec
 /.gradle/4.8/taskHistory
 /.gradle/4.8/fileHashes
+.gradle/buildOutputCleanup
+*.hprof
