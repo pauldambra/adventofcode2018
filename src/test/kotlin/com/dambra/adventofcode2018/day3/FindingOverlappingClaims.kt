@@ -13,24 +13,31 @@ internal class FindingOverlappingClaims {
 
     @Test
     fun `can de done for the example inputs`() {
-        val claims = listOf(
-            "#1 @ 1,3: 4x4",
-            "#2 @ 3,1: 4x4",
-            "#3 @ 5,5: 2x2"
-        ).map { Claim.parse(it) }
 
-        val overlaps = Fabric().findOverlaps(claims)
 
-        assertThat(overlaps).containsAll(
+        val findOverlapArea = Fabric(
             listOf(
-                Coordinate(3, 3),
-                Coordinate(4, 3),
-                Coordinate(3, 4),
-                Coordinate(4, 4)
+                "#1 @ 1,3: 4x4",
+                "#2 @ 3,1: 4x4",
+                "#3 @ 5,5: 2x2"
             )
-        )
+        ).findOverlapArea()
 
-        assertThat(Fabric().findOverlapArea(claims)).isEqualTo(4)
+        assertThat(findOverlapArea).isEqualTo(4)
+    }
+
+    @Test
+    fun `can find claims with no overlaps`() {
+
+        val intactClaims = Fabric(
+            listOf(
+                "#1 @ 1,3: 4x4",
+                "#2 @ 3,1: 4x4",
+                "#3 @ 5,5: 2x2"
+            )
+        ).findIntactClaims()
+
+        assertThat(intactClaims).containsExactly(3)
     }
 
     @Test
@@ -38,12 +45,22 @@ internal class FindingOverlappingClaims {
         val claims = javaClass.getResource("/day3Part1Input.txt")
             .readText()
             .split("\n")
-            .map { Claim.parse(it) }
 
-        val overlapArea = Fabric().findOverlapArea(claims)
+        val overlapArea = Fabric(claims).findOverlapArea()
 
         println("found overlap area = $overlapArea")
 
         assertThat(overlapArea).isGreaterThan(17318)
+    }
+
+    @Test
+    fun `can find claims with no overlaps in the puzzle input`() {
+        val claims = javaClass.getResource("/day3Part1Input.txt")
+            .readText()
+            .split("\n")
+
+        val intactClaims = Fabric(claims).findIntactClaims()
+
+        assertThat(intactClaims).containsExactlyInAnyOrder(1097)
     }
 }

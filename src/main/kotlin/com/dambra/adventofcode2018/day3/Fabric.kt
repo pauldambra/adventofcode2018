@@ -1,40 +1,36 @@
 package com.dambra.adventofcode2018.day3
 
-class Fabric {
-    fun findOverlaps(cs: List<Claim>): List<Coordinate> {
+class Fabric(claims: List<String>) {
+    private var claims: List<Claim> = claims.map { Claim.parse(it) }
 
-        val ugh = HashMap<Coordinate, MutableList<Claim>>()
-
-        val minX = cs.minBy { it.left }!!.minX()
-        val maxX = cs.maxBy { it.left + it.width }!!.maxX()
-
-        val minY = cs.minBy { it.top }!!.minY()
-        val maxY = cs.maxBy { it.top + it.height }!!.maxY()
-
-        println("minx: $minX and maxX: $maxX")
-        println("minY: $minY and maxY: $maxY")
-
-        (minY..maxY).forEach { y ->
-            (minX..maxX).forEach { x ->
-                val c = Coordinate(x, y)
-                ugh[c] = mutableListOf()
+    fun findOverlapArea(): Int {
+        val countOfClaimsWithCoordinate = HashMap<Coordinate, Int>()
+        claims.forEach { c ->
+            c.coordinates.forEach {
+                countOfClaimsWithCoordinate[it] = countOfClaimsWithCoordinate.getOrDefault(it, 0) + 1
             }
         }
 
-        cs.forEach { claim ->
-            claim.coordinates().forEach {
-                ugh[it]!!.add(claim)
-            }
-        }
-
-        val final = ugh
-            .filter { it.value.size > 1 }
-        println(final)
-        return final.map { it.key }
+        return countOfClaimsWithCoordinate.filter { it.value > 1 }.size
     }
 
-    fun findOverlapArea(claims: List<Claim>): Int {
-        return findOverlaps(claims).size
+    fun findIntactClaims(): List<Int> {
+        val x = HashMap<Coordinate, List<Int>>()
+        val overlappingClaims = mutableSetOf<Int>()
+
+        claims.forEach { c ->
+            c.coordinates.forEach {
+                val newClaimsAtThisCoordinate = x.getOrDefault(it, emptyList()) + c.id
+                x[it] = newClaimsAtThisCoordinate
+                if (newClaimsAtThisCoordinate.size > 1) {
+                    overlappingClaims.addAll(newClaimsAtThisCoordinate)
+                }
+            }
+        }
+
+        return claims
+            .map {it.id}
+            .filterNot { overlappingClaims.contains(it) }
     }
 }
 
