@@ -2,71 +2,84 @@ package com.dambra.adventofcode2018.day4
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.lang.Exception
 import java.time.LocalDateTime
 
 internal class ReadTheGuardStream {
 
+    private val puzzleInput = javaClass.getResource("/day4Part1Input.txt")
+        .readText()
+        .split("\n")
+
+    private val exampleInput = listOf(
+        "[1518-11-01 00:00] Guard #10 begins shift",
+        "[1518-11-01 00:05] falls asleep",
+        "[1518-11-01 00:25] wakes up",
+        "[1518-11-01 00:30] falls asleep",
+        "[1518-11-01 00:55] wakes up",
+        "[1518-11-01 23:58] Guard #99 begins shift",
+        "[1518-11-02 00:40] falls asleep",
+        "[1518-11-02 00:50] wakes up",
+        "[1518-11-03 00:05] Guard #10 begins shift",
+        "[1518-11-03 00:24] falls asleep",
+        "[1518-11-03 00:29] wakes up",
+        "[1518-11-04 00:02] Guard #99 begins shift",
+        "[1518-11-04 00:36] falls asleep",
+        "[1518-11-04 00:46] wakes up",
+        "[1518-11-05 00:03] Guard #99 begins shift",
+        "[1518-11-05 00:45] falls asleep",
+        "[1518-11-05 00:55] wakes up"
+    )
+
     @Test
     fun `with the example events`() {
-        val events = listOf(
-            "[1518-11-01 00:00] Guard #10 begins shift",
-            "[1518-11-01 00:05] falls asleep",
-            "[1518-11-01 00:25] wakes up",
-            "[1518-11-01 00:30] falls asleep",
-            "[1518-11-01 00:55] wakes up",
-            "[1518-11-01 23:58] Guard #99 begins shift",
-            "[1518-11-02 00:40] falls asleep",
-            "[1518-11-02 00:50] wakes up",
-            "[1518-11-03 00:05] Guard #10 begins shift",
-            "[1518-11-03 00:24] falls asleep",
-            "[1518-11-03 00:29] wakes up",
-            "[1518-11-04 00:02] Guard #99 begins shift",
-            "[1518-11-04 00:36] falls asleep",
-            "[1518-11-04 00:46] wakes up",
-            "[1518-11-05 00:03] Guard #99 begins shift",
-            "[1518-11-05 00:45] falls asleep",
-            "[1518-11-05 00:55] wakes up"
-        ).sorted()
 
-        println("sorted guard events")
-        println(events)
+        val guardEvents = GuardPattern.parse(exampleInput)
 
-        val guardEvents = GuardPattern.parse(events)
-
-
-
-        val guardPost = GuardPost(guardEvents)
-        val actual = guardPost.bestGuardStrategyOne()
+        val actual = GuardPost(guardEvents).bestGuardStrategyOne()
 
         assertThat(actual).isEqualTo(240)
     }
 
     @Test
-    fun `with the puzzle input`() {
-        val events = javaClass.getResource("/day4Part1Input.txt")
-            .readText()
-            .split("\n")
-            .sorted()
+    fun `with the example events for strategy 2`() {
 
-        println("sorted guard events")
-        println(events)
+        val guardEvents = GuardPattern.parse(exampleInput)
 
-        val guardEvents = GuardPattern.parse(events)
-        val guardPost = GuardPost(guardEvents)
-        val actual = guardPost.bestGuardStrategyOne()
+        val actual = GuardPost(guardEvents).bestGuardStrategyTwo()
 
-        // most asleep was 797
-        assertThat(actual).isEqualTo(14346)
+        assertThat(actual).isEqualTo(4455)
+    }
+
+    @Test
+    fun `with the puzzle input for part one`() {
+        val guardEvents = GuardPattern.parse(puzzleInput)
+
+        val mostAsleepGuardStrategyOne = GuardPost(guardEvents).bestGuardStrategyOne()
+
+        assertThat(mostAsleepGuardStrategyOne).isEqualTo(14346)
+    }
+
+    @Test
+    fun `with the puzzle input for part two`() {
+        val guardEvents = GuardPattern.parse(puzzleInput)
+
+        val guardWithMostFrequentMinuteAsleep = GuardPost(guardEvents).bestGuardStrategyTwo()
+
+        assertThat(guardWithMostFrequentMinuteAsleep).isEqualTo(5705)
     }
 }
 
 class GuardPost(guardEvents: List<GuardEvent>) {
+
+    private lateinit var longestSleepingGuardBestMinute: Pair<String, Int>
     fun bestGuardStrategyOne(): Int {
-        return guardBestMinute.first.toInt() * guardBestMinute.second
+        return longestSleepingGuardBestMinute.first.toInt() * longestSleepingGuardBestMinute.second
     }
 
-    private var guardBestMinute: Pair<String, Int>
+    private lateinit var mostFrequentAsleepMinute: Pair<String, Int>
+    fun bestGuardStrategyTwo(): Int {
+        return mostFrequentAsleepMinute.first.toInt() * mostFrequentAsleepMinute.second
+    }
 
     init {
         val guards = mutableMapOf<String, MutableList<Int>>()
@@ -89,18 +102,46 @@ class GuardPost(guardEvents: List<GuardEvent>) {
             }
         }
 
+        guardThatSpentLongestAsleep(guards)
+        guardThatSleptMostOnAnyParticularMinute(guards)
+
+    }
+
+    private fun guardThatSleptMostOnAnyParticularMinute(guards: MutableMap<String, MutableList<Int>>) {
+
+        val guardMinuteFrequency = guards
+            .filter { it.value.isNotEmpty() }
+            .map {
+                val minuteFrequencyForGuard = it.value
+                    .groupingBy { m -> m }
+                    .eachCount()
+                    .toList()
+
+                it.key to minuteFrequencyForGuard.maxBy { x -> x.second }!!
+            }
+            .maxBy { it.second.second }!!
+
+        println("guard that is most frequently asleep on a given minute is ${guardMinuteFrequency.first}")
+        println("that minute is ${guardMinuteFrequency.second}")
+
+        this.mostFrequentAsleepMinute = Pair(guardMinuteFrequency.first, guardMinuteFrequency.second.first)
+    }
+
+    private fun guardThatSpentLongestAsleep(guards: MutableMap<String, MutableList<Int>>) {
         val guardMostAsleep = guards.maxBy { it.value.size }!!
+
         println("guard most asleep was ${guardMostAsleep.key}")
 
         val minuteAsleepFreq = guards[guardMostAsleep.key]!!
             .groupingBy { it }.eachCount()
             .toList()
-            .sortedByDescending { (_,v) -> v }
+            .sortedByDescending { (_, v) -> v }
             .first()
             .first
 
-        this.guardBestMinute = Pair(guardMostAsleep.key, minuteAsleepFreq)
+        println("the minute they slept most was ${minuteAsleepFreq}")
 
+        this.longestSleepingGuardBestMinute = Pair(guardMostAsleep.key, minuteAsleepFreq)
     }
 }
 
@@ -121,7 +162,7 @@ data class DateParts(
         }
     }
 
-    fun asLocalDateTime()  =
+    fun asLocalDateTime() =
         LocalDateTime.of(
             year.toInt(),
             month.toInt(),
@@ -135,6 +176,7 @@ interface GuardEvent {
     val dateParts: LocalDateTime
     val id: String
 }
+
 data class ShiftStarted(override val dateParts: LocalDateTime, override val id: String) : GuardEvent
 data class GuardFellAsleep(override val dateParts: LocalDateTime, override val id: String) : GuardEvent
 data class GuardWokeUp(override val dateParts: LocalDateTime, override val id: String) : GuardEvent
@@ -147,6 +189,7 @@ class GuardPattern {
 
         fun parse(events: List<String>): List<GuardEvent> {
             return events
+                .sorted()
                 .map {
                     val result = inputPattern.matchEntire(it)!!
                     Pair(result.groupValues[1], result.groupValues[2])
