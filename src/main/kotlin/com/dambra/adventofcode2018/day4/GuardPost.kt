@@ -10,23 +10,16 @@ class GuardPost(guardEvents: List<GuardEvent>) {
     var bestGuardStrategyTwo: Int = 0
         private set
 
-    init {
-        val guards = mutableMapOf<String, MutableList<Int>>()
+    private val guards = mutableMapOf<String, MutableList<Int>>()
 
+    init {
         var fellAsleep: LocalDateTime? = null
 
-        for (ge in guardEvents) {
-            when (ge) {
-                is ShiftStarted -> guards.putIfAbsent(ge.id, mutableListOf())
-                is GuardFellAsleep -> fellAsleep = ge.dateParts
-                is GuardWokeUp -> {
-                    val wokeUp = ge.dateParts
-                    var current = fellAsleep!!
-                    while (!current.isEqual(wokeUp)) {
-                        guards[ge.id]!!.add(current.minute)
-                        current = current.plusMinutes(1)
-                    }
-                }
+        for (e in guardEvents) {
+            when (e) {
+                is ShiftStarted -> guards.putIfAbsent(e.id, mutableListOf())
+                is GuardFellAsleep -> fellAsleep = e.eventDateTime
+                is GuardWokeUp -> trackMinutesAsleep(e, fellAsleep)
                 else -> throw Exception("impossible event")
             }
         }
@@ -34,6 +27,14 @@ class GuardPost(guardEvents: List<GuardEvent>) {
         guardThatSpentLongestAsleep(guards)
         guardThatSleptMostOnAnyParticularMinute(guards)
 
+    }
+
+    private fun trackMinutesAsleep(ge: GuardEvent, fellAsleep: LocalDateTime?) {
+        var current = fellAsleep!!
+        while (!current.isEqual(ge.eventDateTime)) {
+            this.guards[ge.id]!!.add(current.minute)
+            current = current.plusMinutes(1)
+        }
     }
 
     private fun guardThatSleptMostOnAnyParticularMinute(guards: MutableMap<String, MutableList<Int>>) {
