@@ -9,12 +9,36 @@ internal class Grids {
         .readText()
         .split("\n")
 
+
+    @Test
+    fun `can find safe region size in the puzzle input grid`() {
+        val coordinates = puzzleInput.toCoordinates()
+
+        val grid = Grid(coordinates)
+        assertThat(grid.findSafeRegion(10000)).isEqualTo(41145)
+    }
+
+    @Test
+    fun `can find safe regions in the example input`() {
+        val coordinates = listOf(
+            "1, 1",
+            "1, 6",
+            "8, 3",
+            "3, 4",
+            "5, 5",
+            "8, 9"
+        ).toCoordinates()
+
+        val grid = Grid(coordinates)
+        assertThat(grid.findSafeRegion(32)).isEqualTo(16)
+    }
+
     @Test
     fun `can process the puzzle input grid`() {
         val coordinates = puzzleInput.toCoordinates()
 
         val grid = Grid(coordinates)
-        assertThat(grid.process()).isEqualTo(3933)
+        assertThat(grid.findBiggestUnsafeRegionSize()).isEqualTo(3933)
     }
 
     @Test
@@ -29,7 +53,7 @@ internal class Grids {
         ).toCoordinates()
 
         val grid = Grid(coordinates)
-        assertThat(grid.process()).isEqualTo(17)
+        assertThat(grid.findBiggestUnsafeRegionSize()).isEqualTo(17)
     }
 
     @Test
@@ -44,7 +68,8 @@ internal class Grids {
         ).toCoordinates()
 
         val grid = Grid(coordinates)
-        assertThat(grid.draw()).isEqualTo("""
+        assertThat(grid.draw()).isEqualTo(
+            """
 00000.2222
 00000.2222
 0003342222
@@ -54,7 +79,8 @@ internal class Grids {
 111.4444..
 111.444555
 111.445555
-111.555555""".trimIndent())
+111.555555""".trimIndent()
+        )
     }
 }
 
@@ -62,7 +88,7 @@ class Grid(private val coordinates: List<Coordinate>) {
     fun draw(): String {
         val byX = coordinates
             .groupBy { it.x }
-            .map { it.key to it.value.groupBy { v ->v.y } }
+            .map { it.key to it.value.groupBy { v -> v.y } }
             .toMap()
         val maxX = coordinates.maxBy { it.x }!!.x
         val maxY = coordinates.maxBy { it.y }!!.y
@@ -80,16 +106,16 @@ class Grid(private val coordinates: List<Coordinate>) {
                 rows.last().add(cell)
             }
         }
-        return rows.joinToString("\n") {it.joinToString("")}
+        return rows.joinToString("\n") { it.joinToString("") }
     }
 
     private val grid = mutableMapOf<Coordinate, Int>()
     private val infiniteAreas = mutableSetOf<Coordinate>()
 
-    fun  process(): Int {
+    fun findBiggestUnsafeRegionSize(): Int {
         val byX = coordinates
             .groupBy { it.x }
-            .map { it.key to it.value.groupBy { v ->v.y } }
+            .map { it.key to it.value.groupBy { v -> v.y } }
             .toMap()
         val maxX = coordinates.maxBy { it.x }!!.x
         val maxY = coordinates.maxBy { it.y }!!.y
@@ -128,10 +154,10 @@ class Grid(private val coordinates: List<Coordinate>) {
                 }
             }
         }
-         val x = grid.filterNot { infiniteAreas.contains(it.key) }
-             .map { it.value to it.key }
-             .sortedByDescending { it.first }
-             .first()
+        val x = grid.filterNot { infiniteAreas.contains(it.key) }
+            .map { it.value to it.key }
+            .sortedByDescending { it.first }
+            .first()
         println("biggest finite area is $x")
         return x.first
     }
@@ -149,10 +175,31 @@ class Grid(private val coordinates: List<Coordinate>) {
     }
 
     private fun findClosest(coordinate: Coordinate): Coordinate? {
-        val distances = coordinates
+        val distances = distancesToCells(coordinate)
+        return if (distances[0].second == distances[1].second) null else distances[0].first
+    }
+
+    private fun distancesToCells(coordinate: Coordinate): List<Pair<Coordinate, Int>> {
+        return coordinates
             .map { Pair(it, it.manhattanDistanceTo(coordinate)) }
             .sortedBy { it.second }
-        return if (distances[0].second == distances[1].second) null else distances[0].first
+    }
+
+    fun findSafeRegion(maxDistance: Int): Int {
+        val maxX = coordinates.maxBy { it.x }!!.x
+        val maxY = coordinates.maxBy { it.y }!!.y
+        val gridSize = max(maxX, maxY)
+
+        var safeCount = 0
+        for (y in 0..gridSize) {
+            for (x in 0..gridSize) {
+                val cell = Coordinate(0, x, y)
+                if (distancesToCells(cell).sumBy { it.second } < maxDistance) {
+                    safeCount++
+                }
+            }
+        }
+        return safeCount
     }
 
 }
