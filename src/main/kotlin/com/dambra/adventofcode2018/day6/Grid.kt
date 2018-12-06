@@ -9,49 +9,63 @@ class Grid(private val coordinates: List<Coordinate>) {
             .groupBy { it.x }
             .map { it.key to it.value.groupBy { v -> v.y } }
             .toMap()
-        val maxX = coordinates.maxBy { it.x }!!.x
-        val maxY = coordinates.maxBy { it.y }!!.y
-        val gridSize = Integer.max(maxX, maxY)
 
-        for (y in 0..gridSize) {
+        val (maxX, maxY, gridSize) = getGridSize()
 
-            for (x in 0..gridSize) {
-                val xMatches = byX.getOrDefault(x, emptyMap())
-                val yMatches = xMatches.getOrDefault(y, emptyList())
-                if (yMatches.size > 1) {
-                    throw Exception("shouldn't have more than one match: $yMatches")
-                }
-                if (yMatches.isEmpty()) {
-                    //this isn't one of the coordinates find closest
-                    val closest = findClosest(Coordinate(100, x, y))
-                    if (closest == null) {
-                        //equal distance don't do anything
-                    } else {
-                        updateArea(closest)
-                        if (isEdgeCoordinate(x, maxX, y, maxY)) {
-                            infiniteAreas.add(closest)
-                        }
-                    }
+        (0..gridSize).forEach { y ->
+            (0..gridSize).forEach { x ->
+                val deviceCoordinate = isDeviceCoordinate(byX, x, y)
+                if (deviceCoordinate.isEmpty()) {
+                    identifyRegion(x, y, maxX, maxY)
                 } else {
-                    //this is one of the coordinates. just count it
-                    updateArea(yMatches.first())
-                }
-                val cell = yMatches.firstOrNull() ?: findClosest(Coordinate(100, x, y))
-                if (cell != null) {
-                    if (isEdgeCoordinate(x, maxX, y, maxY)) {
-                        infiniteAreas.add(cell)
-                    } else {
-
-                    }
+                    thisIsOneOfTheDeviceCoordinates(deviceCoordinate)
                 }
             }
         }
-        val x = grid.filterNot { infiniteAreas.contains(it.key) }
+        return findSizeOfLargestFiniteArea()
+    }
+
+    private fun findSizeOfLargestFiniteArea(): Int {
+        val x = grid
+            .filterNot { infiniteAreas.contains(it.key) }
             .map { it.value to it.key }
             .sortedByDescending { it.first }
             .first()
         println("biggest finite area is $x")
         return x.first
+    }
+
+    private fun identifyRegion(x: Int, y: Int, maxX: Int, maxY: Int) {
+        val closest = findClosest(Coordinate(100, x, y)) ?: return
+
+        updateArea(closest)
+        if (isEdgeCoordinate(x, maxX, y, maxY)) {
+            infiniteAreas.add(closest)
+        }
+    }
+
+    private fun thisIsOneOfTheDeviceCoordinates(deviceCoordinate: List<Coordinate>) {
+        updateArea(deviceCoordinate.first())
+    }
+
+    private fun isDeviceCoordinate(
+        byX: Map<Int, Map<Int, List<Coordinate>>>,
+        x: Int,
+        y: Int
+    ): List<Coordinate> {
+        val xMatches = byX.getOrDefault(x, emptyMap())
+        val yMatches = xMatches.getOrDefault(y, emptyList())
+        if (yMatches.size > 1) {
+            throw Exception("shouldn't have more than one match: $yMatches")
+        }
+        return yMatches
+    }
+
+    private fun getGridSize(): Triple<Int, Int, Int> {
+        val maxX = coordinates.maxBy { it.x }!!.x
+        val maxY = coordinates.maxBy { it.y }!!.y
+        val gridSize = Integer.max(maxX, maxY)
+        return Triple(maxX, maxY, gridSize)
     }
 
     private fun updateArea(coordinate: Coordinate) {
@@ -61,10 +75,6 @@ class Grid(private val coordinates: List<Coordinate>) {
 
     private fun isEdgeCoordinate(x: Int, maxX: Int, y: Int, maxY: Int) =
         (x == 0 || x == maxX) || (y == 0 || y == maxY)
-
-    private fun drawClosest(coordinate: Coordinate): String {
-        return findClosest(coordinate)?.id?.toString() ?: "."
-    }
 
     private fun findClosest(coordinate: Coordinate): Coordinate? {
         val distances = distancesToCells(coordinate)
@@ -78,20 +88,14 @@ class Grid(private val coordinates: List<Coordinate>) {
     }
 
     fun findSafeRegion(maxDistance: Int): Int {
-        val maxX = coordinates.maxBy { it.x }!!.x
-        val maxY = coordinates.maxBy { it.y }!!.y
-        val gridSize = Integer.max(maxX, maxY)
+        val (_, _, gridSize) = getGridSize()
 
-        var safeCount = 0
-        for (y in 0..gridSize) {
-            for (x in 0..gridSize) {
-                val cell = Coordinate(0, x, y)
-                if (distancesToCells(cell).sumBy { it.second } < maxDistance) {
-                    safeCount++
-                }
-            }
+        return (0..gridSize).fold(0) { count, y ->
+            count + (0..gridSize)
+                .map { x -> Coordinate(0, x, y) }
+                .filter { cell -> distancesToCells(cell).sumBy { it.second } < maxDistance }
+                .count()
         }
-        return safeCount
     }
 
 }

@@ -12,7 +12,6 @@ fun List<String>.toCoordinates(): List<Coordinate> {
     return this
         .asSequence()
         .map { it.split(",") }
-        .onEach { println(it) }
         .map { Pair(it[0].trim(), it[1].trim()) }
         .mapIndexed { index, ss -> Coordinate(index, ss.first.toInt(), ss.second.toInt()) }
         .toList()
