@@ -77,14 +77,8 @@ class Grid(private val coordinates: List<Coordinate>) {
         (x == 0 || x == maxX) || (y == 0 || y == maxY)
 
     private fun findClosest(coordinate: Coordinate): Coordinate? {
-        val distances = distancesToCells(coordinate)
+        val distances = coordinate.distancesTo(coordinates)
         return if (distances[0].second == distances[1].second) null else distances[0].first
-    }
-
-    private fun distancesToCells(coordinate: Coordinate): List<Pair<Coordinate, Int>> {
-        return coordinates
-            .map { Pair(it, it.manhattanDistanceTo(coordinate)) }
-            .sortedBy { it.second }
     }
 
     fun findSafeRegion(maxDistance: Int): Int {
@@ -93,7 +87,7 @@ class Grid(private val coordinates: List<Coordinate>) {
         return (0..gridSize).fold(0) { count, y ->
             count + (0..gridSize)
                 .map { x -> Coordinate(0, x, y) }
-                .filter { cell -> distancesToCells(cell).sumBy { it.second } < maxDistance }
+                .filter { cell -> cell.distancesTo(coordinates).sumBy { it.second } < maxDistance }
                 .count()
         }
     }

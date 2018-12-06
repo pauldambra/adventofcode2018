@@ -4,8 +4,12 @@ import kotlin.math.abs
 
 data class Coordinate(val id: Int, val x: Int, val y: Int) {
     fun manhattanDistanceTo(other: Coordinate): Int {
-        return abs(x-other.x) + abs(y-other.y)
+        return abs(x - other.x) + abs(y - other.y)
     }
+
+    fun distancesTo(cs: List<Coordinate>) =
+        cs.map { Pair(it, it.manhattanDistanceTo(this)) }
+        .sortedBy { it.second }
 }
 
 fun List<String>.toCoordinates(): List<Coordinate> {
