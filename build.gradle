@@ -23,7 +23,18 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 
+
+
 test {
+    doFirst {
+        println "main"
+        println sourceSets.main.runtimeClasspath.asPath
+        println "test"
+        println sourceSets.test.runtimeClasspath.asPath
+        println "something else"
+        println configurations.runtime.resolve()
+    }
+
     useJUnitPlatform()
 
     testLogging {
