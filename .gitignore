@@ -89,11 +89,8 @@ hs_err_pid*
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 !/gradle/wrapper/gradle-wrapper.jar
-/build/reports/
-/build/kotlin/
-/build/test-results/
+/build
 /.gradle/buildOutputCleanup/buildOutputCleanup.lock
-/build/jacoco/test.exec
 /.gradle/4.8/taskHistory
 /.gradle/4.8/fileHashes
 .gradle/buildOutputCleanup
