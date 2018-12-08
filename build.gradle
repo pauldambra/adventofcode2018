@@ -26,15 +26,6 @@ dependencies {
 
 
 test {
-    doFirst {
-        println "main"
-        println sourceSets.main.runtimeClasspath.asPath
-        println "test"
-        println sourceSets.test.runtimeClasspath.asPath
-        println "something else"
-        println configurations.runtime.resolve()
-    }
-
     useJUnitPlatform()
 
     testLogging {
