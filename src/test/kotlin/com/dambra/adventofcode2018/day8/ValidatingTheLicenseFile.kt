@@ -44,7 +44,7 @@ internal class ValidatingTheLicenseFile {
     @Test
     fun `Can sum the metadata in the puzzle input tree`() {
         val metadataSum = puzzleInput.parse().sumMetadata()
-        assertThat(metadataSum).isEqualTo(138)
+        assertThat(metadataSum).isEqualTo(36627)
     }
 }
 
