@@ -1,8 +1,7 @@
 package com.dambra.adventofcode2018.day1
 
+import com.dambra.adventofcode2018.repeat
 import java.lang.Exception
-
-private fun <T> List<T>.repeat() = sequence { while (true) yieldAll(this@repeat) }
 
 fun Sequence<String>.firstRepeatedFrequency(): Int {
 
