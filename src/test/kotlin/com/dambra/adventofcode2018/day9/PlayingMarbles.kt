@@ -1,6 +1,5 @@
 package com.dambra.adventofcode2018.day9
 
-import com.dambra.adventofcode2018.repeat
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -54,102 +53,11 @@ internal class PlayingMarbles {
         val highScore = Game(puzzleInput).highScore()
         assertThat(highScore).isEqualTo(388131)
     }
-}
 
-class Circle {
-    var currentMarble: Marble
-        private set
-
-    init {
-        currentMarble = Marble(0)
-        currentMarble.setClockwise(currentMarble)
-        currentMarble.setCounterClockwise(currentMarble)
-    }
-
-    fun place(marble: Marble) {
-        currentMarble = currentMarble.clockwiseMarble
-        val before = currentMarble
-        val after = currentMarble.clockwiseMarble
-
-        before.setClockwise(marble)
-        marble.setCounterClockwise(before)
-
-        marble.setClockwise(after)
-        after.setCounterClockwise(marble)
-
-        currentMarble = marble
-    }
-
-    fun removeScoringMarble(): Marble {
-        var m = currentMarble
-        for (it in 1..7) {
-            m = m.counterClockwiseMarble
-        }
-
-        val before = m.counterClockwiseMarble
-        val after = m.clockwiseMarble
-
-        after.setCounterClockwise(before)
-        before.setClockwise(after)
-        currentMarble = after
-
-        return m
+    @Test
+    fun `can play with the 100x larger puzzle input`() {
+        val highScore = Game(puzzleInput, 100).highScore()
+        assertThat(highScore).isEqualTo(3239376988L)
     }
 }
 
-class Marble(val marbleNumber: Int) {
-    lateinit var counterClockwiseMarble: Marble
-        private set
-
-    lateinit var clockwiseMarble: Marble
-        private set
-
-    fun setCounterClockwise(m: Marble) {
-        this.counterClockwiseMarble = m
-    }
-
-    fun setClockwise(m: Marble) {
-        this.clockwiseMarble = m
-    }
-
-    override fun toString(): String {
-        return "Marble(${counterClockwiseMarble?.marbleNumber}<- $marbleNumber -> ${clockwiseMarble?.marbleNumber})"
-    }
-
-
-}
-
-class Game(private val gameDescription: String) {
-    private val playerScores: MutableMap<Int, Int> = mutableMapOf()
-
-    fun highScore(): Int {
-        val parts = gameDescription.split(" ")
-        val numberOfPlayers = parts.first().toInt()
-        val lastMarble = parts[parts.size - 2].toInt()
-
-        val playerTurns = (0 until numberOfPlayers).asSequence().repeat()
-
-        val marbles = (1..lastMarble).asSequence()
-
-        val eachTurn = playerTurns.zip(marbles)
-
-        val circle = Circle()
-
-        eachTurn.forEach {
-            if (it.second % 23 == 0) {
-                playerScores.putIfAbsent(it.first, 0)
-                val score = playerScores[it.first]!!
-
-                val m: Marble = circle.removeScoringMarble()
-
-                playerScores[it.first] = score + it.second + m.marbleNumber
-            } else {
-                circle.place(Marble(it.second))
-            }
-        }
-        println(playerScores)
-        return playerScores.values.sortedByDescending { it }.first()
-    }
-
-
-}
