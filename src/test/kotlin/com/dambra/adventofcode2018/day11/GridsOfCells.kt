@@ -1,5 +1,7 @@
 package com.dambra.adventofcode2018.day11
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -17,63 +19,56 @@ import org.junit.jupiter.api.Test
 internal class GridsOfCells {
     @Test
     fun `grid serial 18 has largest 3x3 cell with power 29 at 33,45`() {
-        val threeByThree = ThreeByThree(Cell(33, 45), 18)
+        val threeByThree = CellSquare(Cell(33, 45), 18, 3)
         assertThat(threeByThree.power()).isEqualTo(29)
     }
 
     @Test
     fun `grid serial 42 has largest 3x3 cell top-left is 21,61 (with a total power of 30)`() {
-        val threeByThree = ThreeByThree(Cell(21, 61), 42)
+        val threeByThree = CellSquare(Cell(21, 61), 42, 3)
         assertThat(threeByThree.power()).isEqualTo(30)
     }
 
     @Test
     fun `can seek for largest cell in grid with serial 18`() {
         val gridSerial = 18
-        val largest: ThreeByThree = Grid(gridSerial).seekLargestThreeByThree()
+        val largest: CellSquare = Grid(gridSerial).seekLargestCellSquare()
         assertThat(largest.topLeft).isEqualTo(Cell(33, 45))
     }
 
     @Test
     fun `can seek for largest cell in grid with serial 42`() {
         val gridSerial = 42
-        val largest: ThreeByThree = Grid(gridSerial).seekLargestThreeByThree()
+        val largest: CellSquare = Grid(gridSerial).seekLargestCellSquare()
         assertThat(largest.topLeft).isEqualTo(Cell(21, 61))
     }
 
     @Test
     fun `can seek for largest cell in grid with puzzle input serial id 7139`() {
         val gridSerial = 7139
-        val largest: ThreeByThree = Grid(gridSerial).seekLargestThreeByThree()
+        val largest: CellSquare = Grid(gridSerial).seekLargestCellSquare()
         assertThat(largest.topLeft).isEqualTo(Cell(20, 62))
     }
-}
 
-class Grid(private val gridSerial: Int) {
-    fun seekLargestThreeByThree(): ThreeByThree {
-        var largest: ThreeByThree? = null
-
-        val gridRange = 1..298
-        gridRange.forEach { x ->
-            gridRange.forEach { y ->
-                val current = ThreeByThree(Cell(x, y), gridSerial)
-                if (largest == null || current.power() > largest!!.power()) {
-                    largest = current
-                }
-            }
-        }
-
-        return largest!!
-    }
-}
-
-class ThreeByThree(val topLeft: Cell, private val gridSerial: Int) {
-    fun power(): Int {
-        return (topLeft.x until topLeft.x + 3).fold(0) { xSum, x ->
-            xSum + (topLeft.y until topLeft.y + 3).fold(0) { ySum, y ->
-                ySum + powerLevelOf(Cell(x, y), gridSerial)
-            }
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `can seek for largest cell from 1 to 300 square in grid with serial 18`() {
+        runBlocking {
+            val gridSerial = 18
+            val largest = Grid(gridSerial).seekLargestCellSquareOfAnySize()
+            assertThat(largest.power()).isEqualTo(113)
+            assertThat(largest.toString()).isEqualTo("90,269,16")
         }
     }
 
+    @ExperimentalCoroutinesApi
+    @Test
+    fun `can seek for largest cell from 1 to 300 square in grid with serial 42`() {
+        runBlocking {
+            val gridSerial = 42
+            val largest = Grid(gridSerial).seekLargestCellSquareOfAnySize()
+            assertThat(largest.power()).isEqualTo(119)
+            assertThat(largest.toString()).isEqualTo("232,251,12")
+        }
+    }
 }
