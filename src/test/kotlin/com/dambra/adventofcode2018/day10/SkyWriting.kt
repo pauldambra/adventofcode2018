@@ -206,8 +206,11 @@ class StarMap(startingPositions: List<String>) {
 
         startingBounds = getBoundingBox(stars)
 
+        byY = starsByCoordinate()
+    }
 
-        byY = stars
+    private fun starsByCoordinate(): Map<Long, Map<Long, List<Star>>> {
+        return stars
             .groupBy { it.position.y }
             .map { it.key to it.value.groupBy { ys -> ys.position.x } }
             .toMap()
@@ -251,10 +254,7 @@ class StarMap(startingPositions: List<String>) {
 
     override fun toString(): String {
 
-        byY = stars
-            .groupBy { it.position.y }
-            .map { it.key to it.value.groupBy { ys -> ys.position.x } }
-            .toMap()
+        byY = starsByCoordinate()
 
         val bounds = getBoundingBox(stars)
 
