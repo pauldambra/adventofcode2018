@@ -1,7 +1,5 @@
 package com.dambra.adventofcode2018.day11
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -10,8 +8,8 @@ import org.junit.jupiter.api.Test
 
 -2  -4   4   4   4
 -4   4   4   4  -5
- 4   3   3   4  -4
- 1   1   2   4  -3
+4   3   3   4  -4
+1   1   2   4  -3
 -1   0   2  -5  -2
 
  */
@@ -50,25 +48,21 @@ internal class GridsOfCells {
         assertThat(largest.topLeft).isEqualTo(Cell(20, 62))
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `can seek for largest cell from 1 to 300 square in grid with serial 18`() {
-        runBlocking {
-            val gridSerial = 18
-            val largest = Grid(gridSerial).seekLargestCellSquareOfAnySize()
-            assertThat(largest.power()).isEqualTo(113)
-            assertThat(largest.toString()).isEqualTo("90,269,16")
-        }
+        val gridSerial = 18
+        val largest = Grid(gridSerial).seekLargestCellSquareOfAnySize()
+        assertThat(largest.power()).isEqualTo(113)
+        assertThat(largest.toString()).isEqualTo("90,269,16")
+
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun `can seek for largest cell from 1 to 300 square in grid with serial 42`() {
-        runBlocking {
-            val gridSerial = 42
-            val largest = Grid(gridSerial).seekLargestCellSquareOfAnySize()
-            assertThat(largest.power()).isEqualTo(119)
-            assertThat(largest.toString()).isEqualTo("232,251,12")
-        }
+        val gridSerial = 42
+        val largest = Grid(gridSerial).seekLargestCellSquareOfAnySize()
+        assertThat(largest.power()).isEqualTo(119)
+        assertThat(largest.toString()).isEqualTo("232,251,12")
+
     }
 }

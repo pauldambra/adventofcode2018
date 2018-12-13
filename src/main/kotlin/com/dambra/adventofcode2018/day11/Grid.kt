@@ -1,12 +1,11 @@
 package com.dambra.adventofcode2018.day11
 
-import kotlinx.coroutines.*
-
 class Grid(private val gridSerial: Int) {
+
     fun seekLargestCellSquare(): CellSquare {
         var largest: CellSquare? = null
 
-        val gridRange = 1..298
+        val gridRange = 1..300
         gridRange.forEach { x ->
             gridRange.forEach { y ->
                 val current = CellSquare(Cell(x, y), gridSerial, 3)
@@ -19,36 +18,32 @@ class Grid(private val gridSerial: Int) {
         return largest!!
     }
 
-    @ExperimentalCoroutinesApi
-    suspend fun seekLargestCellSquareOfAnySize(): CellSquare {
-        val jobs = (300 downTo 1).map {
-            GlobalScope.async {
-                largestPowerLevelAtGridSize(it)
-            }
+    fun seekLargestCellSquareOfAnySize(): CellSquare {
+        var largest: CellSquare? = null
+        (1..(300)).forEach {
+            largest = largestPowerLevelAtGridSize(it, largest)
+            println("grid: $it has power ${largest!!.power()}")
         }
-
-        jobs.awaitAll()
-
-        return jobs
-            .map { it.getCompleted() }
-            .filter { it != null }
-            .maxBy { it!!.power() }!!
+        return largest!!
     }
 
-    private fun largestPowerLevelAtGridSize(gridSize: Int): CellSquare? {
-        var largest: CellSquare? = null
-        val gridRange = 1..300
-        gridRange.forEach { x ->
-            gridRange.forEach { y ->
+    private fun largestPowerLevelAtGridSize(
+        gridSize: Int,
+        largest: CellSquare?
+    ): CellSquare? {
+        var foundLargest = largest
+        val gridSizes = 1..(301-gridSize)
+        gridSizes.forEach { x ->
+            gridSizes.forEach { y ->
                 if (squareFitsInGrid(x, y, gridSize)) {
                     val current = CellSquare(Cell(x, y), gridSerial, gridSize)
-                    if (largest == null || current.power() > largest!!.power()) {
-                        largest = current
+                    if (largest == null || current.power() > largest.power()) {
+                        foundLargest = current
                     }
                 }
             }
         }
-        return largest
+        return foundLargest
     }
 
     private fun squareFitsInGrid(x: Int, y: Int, gridSize: Int) = x + gridSize <= 300 && y + gridSize <= 300
