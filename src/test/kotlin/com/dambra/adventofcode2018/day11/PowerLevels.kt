@@ -48,7 +48,7 @@ internal class PowerLevels {
     }
 
     @Test
-    fun `manually calculate gridsize 3 at 90, 265 on grid serial 18`() {
+    fun `manually calculate grid size 3 at 90, 265 on grid serial 18`() {
         /**
          *         90   91   92
          *   265    3   -5   (3)
@@ -60,6 +60,27 @@ internal class PowerLevels {
          *
          */
 
+        cellsHaveExpectedPower()
+
+        val cellsToAdd = gridExpander(Cell(90,265), 3)
+
+        assertThat(cellsToAdd).isEqualTo(listOf(
+            Cell(90, 267),
+            Cell(91, 267),
+            Cell(92, 267),
+            Cell(92, 265),
+            Cell(92, 266),
+            Cell(92, 267)
+        ))
+
+        val sumOfNewCells = cellsToAdd.map {
+            powerLevelOf(it, 18)
+        }.sum()
+
+        assertThat(sumOfNewCells).isEqualTo(7)
+    }
+
+    private fun cellsHaveExpectedPower() {
         val oneOne = powerLevelOf(Cell(90, 265), 18)
         assertThat(oneOne).isEqualTo(3)
 
@@ -86,8 +107,6 @@ internal class PowerLevels {
 
         val threeThree = powerLevelOf(Cell(92, 267), 18)
         assertThat(threeThree).isEqualTo(2)
-
-//        assertThat(powerTotal).isEqualTo(113)
     }
 
 }

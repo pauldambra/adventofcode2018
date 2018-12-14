@@ -95,4 +95,3 @@ hs_err_pid*
 /.gradle/4.8/fileHashes
 .gradle/buildOutputCleanup
 *.hprof
-/src/test/kotlin/com/dambra/adventofcode2018/day10/SkyWriting.kt

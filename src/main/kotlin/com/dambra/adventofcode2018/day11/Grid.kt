@@ -53,9 +53,6 @@ class Grid(private val gridSerial: Int) {
         var largestCalculated: Int = 0
         if (powersAt.containsKey(topLeft)) {
             val seenPowers = powersAt[topLeft]!!
-
-            if (topLeft == Cell(90, 269)) println("for $topLeft we've seen $seenPowers")
-
             largestCalculated = seenPowers[gridSize - 1] ?: 0
         }
 
@@ -68,28 +65,10 @@ class Grid(private val gridSerial: Int) {
                 }
             }
         } else {
-            if (topLeft == Cell(90, 269) && gridSize == 16) println("for gridsize: $gridSize and topLeft $topLeft starting with sum $sum")
 
-            val maxX = topLeft.x + gridSize - 1
-            val maxY = topLeft.y + gridSize - 1
-
-            for (x in (topLeft.x until topLeft.x + gridSize).asSequence()) {
-                val cell = Cell(x, maxY)
-                val power = powerLevelOf(cell, gridSerial)
-                if (topLeft == Cell(90, 269) && gridSize == 16) {
-                    println("cell: $cell and power $power")
-                }
-                sum += power
-            }
-
-            for (y in (topLeft.y until topLeft.y + gridSize).asSequence()) {
-                val cell = Cell(maxX, y)
-                val power = powerLevelOf(cell, gridSerial)
-                if (topLeft == Cell(90, 269) && gridSize == 16) {
-                    println("cell: $cell and power $power")
-                }
-                sum += power
-            }
+            sum += gridExpander(topLeft, gridSize)
+                .map { powerLevelOf(it, gridSerial) }
+                .sum()
 
             powersAt[topLeft]!![gridSize] = sum
         }
@@ -99,4 +78,19 @@ class Grid(private val gridSerial: Int) {
     }
 
     private fun squareFitsInGrid(cell: Cell, gridSize: Int) = cell.x + gridSize <= 301 && cell.y + gridSize <= 301
+}
+
+fun gridExpander(topLeft: Cell, nextGridSize: Int): List<Cell> {
+    val maxX = topLeft.x + nextGridSize - 1
+    val maxY = topLeft.y + nextGridSize - 1
+
+    val acrossBottom = (topLeft.x until topLeft.x + nextGridSize).map { x ->
+        Cell(x, maxY)
+    }
+
+    val downSide = (topLeft.y until topLeft.y + nextGridSize).map { y ->
+        Cell(maxX, y)
+    }
+
+    return acrossBottom + downSide
 }
