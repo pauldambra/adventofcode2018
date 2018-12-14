@@ -46,5 +46,49 @@ internal class PowerLevels {
         val powerLevel = powerLevelOf(Cell(101, 153), 71)
         assertThat(powerLevel).isEqualTo(4)
     }
+
+    @Test
+    fun `manually calculate gridsize 3 at 90, 265 on grid serial 18`() {
+        /**
+         *         90   91   92
+         *   265    3   -5   (3)
+         *   266    3   -3   (-2)
+         *   267   (3) (-1)  (2)
+         *
+         *  having calculated 2x2 sum we only need to calculate the additional
+         *  cells in order to get to a 3x3 sum
+         *
+         */
+
+        val oneOne = powerLevelOf(Cell(90, 265), 18)
+        assertThat(oneOne).isEqualTo(3)
+
+        val oneTwo = powerLevelOf(Cell(90, 266), 18)
+        assertThat(oneTwo).isEqualTo(3)
+
+        val oneThree = powerLevelOf(Cell(90, 267), 18)
+        assertThat(oneThree).isEqualTo(3)
+
+        val twoOne = powerLevelOf(Cell(91, 265), 18)
+        assertThat(twoOne).isEqualTo(-5)
+
+        val twoTwo = powerLevelOf(Cell(91, 266), 18)
+        assertThat(twoTwo).isEqualTo(-3)
+
+        val twoThree = powerLevelOf(Cell(91, 267), 18)
+        assertThat(twoThree).isEqualTo(-1)
+
+        val threeOne = powerLevelOf(Cell(92, 265), 18)
+        assertThat(threeOne).isEqualTo(3)
+
+        val threeTwo = powerLevelOf(Cell(92, 266), 18)
+        assertThat(threeTwo).isEqualTo(-2)
+
+        val threeThree = powerLevelOf(Cell(92, 267), 18)
+        assertThat(threeThree).isEqualTo(2)
+
+//        assertThat(powerTotal).isEqualTo(113)
+    }
+
 }
 
