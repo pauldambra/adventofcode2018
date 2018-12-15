@@ -1,7 +1,6 @@
 package com.dambra.adventofcode2018.day13
 
 import com.dambra.adventofcode2018.repeat
-import java.util.*
 
 data class Location(val x: Int, val y: Int)
 
@@ -9,8 +8,7 @@ class Cart(
     var direction: String,
     var location: Location
 ) {
-
-    var id: String = UUID.randomUUID().toString()
+    var crashed = false
 
     fun move(rails: Map<Location, String>): Cart {
         location = when (direction) {
@@ -94,7 +92,7 @@ class Cart(
         }
     }
 
-    override fun toString() = "Cart(direction='$direction', location=$location, id='$id'"
+    override fun toString() = "Cart(direction='$direction', location=$location"
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

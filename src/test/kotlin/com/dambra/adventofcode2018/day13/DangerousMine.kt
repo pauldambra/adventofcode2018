@@ -3,7 +3,7 @@ package com.dambra.adventofcode2018.day13
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-internal class Carts {
+internal class DangerousMine {
 
     @Test
     fun `2 carts on a vertical track`() {
