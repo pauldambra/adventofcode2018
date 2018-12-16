@@ -47,7 +47,7 @@ internal class SkyWriting {
         //At `0 seconds`, each point has the position given.
         //Each second, each point's velocity is added to its position.
         //So, a point with velocity `<1, -2>` is moving to the right, but is moving upward twice as quickly.
-        // If this point's initial position were `<3, 9>`, after 3 seconds,
+        // If this point's initial position were `<3, 9>`, registersAfter 3 seconds,
         // its position would become `<6, 3>`.
 
         val position = Position(3, 9)

@@ -11,13 +11,13 @@ internal class ReadingTheInstructions {
     @Test
     fun `can parse the instructions`() {
         val instructions = listOf(
-            "Step C must be finished before step A can begin.",
-            "Step C must be finished before step F can begin.",
-            "Step A must be finished before step B can begin.",
-            "Step A must be finished before step D can begin.",
-            "Step B must be finished before step E can begin.",
-            "Step D must be finished before step E can begin.",
-            "Step F must be finished before step E can begin.",
+            "Step C must be finished registersBefore step A can begin.",
+            "Step C must be finished registersBefore step F can begin.",
+            "Step A must be finished registersBefore step B can begin.",
+            "Step A must be finished registersBefore step D can begin.",
+            "Step B must be finished registersBefore step E can begin.",
+            "Step D must be finished registersBefore step E can begin.",
+            "Step F must be finished registersBefore step E can begin.",
             ""
         )
         val parsedInstructions = listOf(
@@ -35,13 +35,13 @@ internal class ReadingTheInstructions {
     @Test
     fun `can assemble the graph of instructions`() {
         val instructions = listOf(
-            "Step C must be finished before step A can begin.",
-            "Step C must be finished before step F can begin.",
-            "Step A must be finished before step B can begin.",
-            "Step A must be finished before step D can begin.",
-            "Step B must be finished before step E can begin.",
-            "Step D must be finished before step E can begin.",
-            "Step F must be finished before step E can begin.",
+            "Step C must be finished registersBefore step A can begin.",
+            "Step C must be finished registersBefore step F can begin.",
+            "Step A must be finished registersBefore step B can begin.",
+            "Step A must be finished registersBefore step D can begin.",
+            "Step B must be finished registersBefore step E can begin.",
+            "Step D must be finished registersBefore step E can begin.",
+            "Step F must be finished registersBefore step E can begin.",
             ""
         )
         val order: String = instructions.parse().assemble()
