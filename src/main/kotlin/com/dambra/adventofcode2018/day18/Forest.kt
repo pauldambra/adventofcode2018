@@ -29,25 +29,14 @@ class Forest(map: String) {
         maxY = acres.keys.maxBy { it.y }!!.y
     }
 
-    val seenStates = mutableSetOf(acres)
-    var firstRepeatingState: MutableMap<ForestCoord, Acre>? = null
-    var firstRepeatAt = 0
+    private val seenStates = mutableSetOf(acres)
+    private var firstRepeatingState: MutableMap<ForestCoord, Acre>? = null
+    private var firstRepeatAt = 0
 
     fun after(minutes: Int): String {
 
-        val start = System.currentTimeMillis()
-        val times = mutableListOf<Long>()
-
         var minute = 0
         while (minute < minutes) {
-
-
-            if (minute % 1000 == 0) {
-                times.add(System.currentTimeMillis() - start)
-                val average = times.average()
-                println("average time for 1000 = $average milliseconds")
-                println("anticipate 1,000,000,000 is ${(average/1000/60/60/24)*1000*1000} days")
-            }
 
             acres = acres.map { x: Map.Entry<ForestCoord, Acre> ->
 
@@ -65,8 +54,14 @@ class Forest(map: String) {
 
             if (firstRepeatingState != null) {
                 if (firstRepeatingState == acres) {
+                    // first repeat is seen at minite `firstRepeatAt`
+                    // we know the forest is in a loop of cycle length minute - firstRepeatAt
+                    // we want to jump forwards by to the highest value
+                    // that is a multiple of `cycle length` after minute and lower than max minutes
                     val cycleLength = minute - firstRepeatAt
-                    minute += ((1000000000 - minute) / cycleLength) * cycleLength
+                    val tillEnd = 1000000000 - minute
+                    val endOfCycleClosestToMax = tillEnd - (tillEnd % cycleLength)
+                    minute += endOfCycleClosestToMax
                 }
 
             } else if (!seenStates.add(acres)) {
