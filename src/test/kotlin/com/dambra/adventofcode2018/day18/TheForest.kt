@@ -147,18 +147,5 @@ internal class TheForest {
 
         assertThat(forest.resourceValue()).isEqualTo(174584)
     }
-
-    @Test
-    fun `maths works how Dan says it does`() {
-        val a = (999999489 / 28) * 28
-        val b = 999999489 / 28 * 28
-        assertThat(a).isEqualTo(b)
-    }
-
-    @Test
-    fun `does maths work at all`() {
-        val a = 999999489 - (999999489 % 28)
-        assertThat(a).isEqualTo(999999476)
-    }
 }
 

@@ -67,7 +67,7 @@ After:  [3, 2, 2, 1]
         sampleProgram
             .map(Instruction.Companion::from)
             .forEach { instr ->
-                val op = operationMatcher.operations[opCodes[instr.opcode]]!!
+                val op = OperationMatcher.operations[opCodes[instr.opcode]]!!
                 registers = op.applyTo(instr, registers)
         }
 

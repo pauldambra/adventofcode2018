@@ -1,6 +1,13 @@
 package com.dambra.adventofcode2018.day16
 
-data class Instruction(val opcode: Int, val inputOne: Int, val inputTwo: Int, val output: Int) {
+interface ElfsemblyInstruction {
+    val inputOne: Int
+    val inputTwo: Int
+    val output: Int
+}
+
+data class Instruction(val opcode: Int, override val inputOne: Int, override val inputTwo: Int, override val output: Int) :
+    ElfsemblyInstruction {
 
 
     companion object {
@@ -12,7 +19,7 @@ data class Instruction(val opcode: Int, val inputOne: Int, val inputTwo: Int, va
 }
 
 interface Operation {
-    fun applyTo(instruction: Instruction, registers: List<Int>): List<Int>
+    fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int>
 }
 /**
  * Addition:
@@ -20,7 +27,7 @@ interface Operation {
 addi (add immediate) stores into register C the result of adding register A and value B.
  */
 class Addi : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 registers[instruction.inputOne] + instruction.inputTwo
@@ -37,7 +44,7 @@ class Addi : Operation {
 addr (add register) stores into register C the result of adding register A and register B.
  */
 class Addr : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 registers[instruction.inputOne] + registers[instruction.inputTwo]
@@ -54,7 +61,7 @@ class Addr : Operation {
 muli (multiply immediate) stores into register C the result of multiplying register A and value B.
  */
 class Muli : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 registers[instruction.inputOne] * instruction.inputTwo
@@ -71,7 +78,7 @@ class Muli : Operation {
 mulr (multiply register) stores into register C the result of multiplying register A and register B.
  */
 class Mulr : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 registers[instruction.inputOne] * registers[instruction.inputTwo]
@@ -88,7 +95,7 @@ Bitwise AND:
 banr (bitwise AND register) stores into register C the result of the bitwise AND of register A and register B.
         */
 class Banr : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 registers[instruction.inputOne] and registers[instruction.inputTwo]
@@ -105,7 +112,7 @@ Bitwise AND:
 bani (bitwise AND immediate) stores into register C the result of the bitwise AND of register A and value B.
  */
 class Bani : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 registers[instruction.inputOne] and instruction.inputTwo
@@ -122,7 +129,7 @@ Bitwise OR:
 borr (bitwise OR register) stores into register C the result of the bitwise OR of register A and register B.
         */
 class Borr : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 registers[instruction.inputOne] or registers[instruction.inputTwo]
@@ -139,7 +146,7 @@ Bitwise OR:
 bori (bitwise OR immediate) stores into register C the result of the bitwise OR of register A and value B.
  */
 class Bori : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 registers[instruction.inputOne] or instruction.inputTwo
@@ -157,7 +164,7 @@ setr (set register) copies the contents of register A into register C. (Input B 
 seti (set immediate) stores value A into register C. (Input B is ignored.)
         */
 class Setr : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 registers[instruction.inputOne]
@@ -175,7 +182,7 @@ setr (set register) copies the contents of register A into register C. (Input B 
 seti (set immediate) stores value A into register C. (Input B is ignored.)
  */
 class Seti : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 instruction.inputOne
@@ -194,7 +201,7 @@ if value A is greater than register B. Otherwise, register C is set to 0.
 
  */
 class Gtir : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 if (instruction.inputOne > registers[instruction.inputTwo])
@@ -215,7 +222,7 @@ gtri (greater-than register/immediate) sets register C to 1
 if register A is greater than value B. Otherwise, register C is set to 0.
  */
 class Gtri : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 if (registers[instruction.inputOne] > instruction.inputTwo)
@@ -236,7 +243,7 @@ gtrr (greater-than register/register) sets register C to 1
 if register A is greater than register B. Otherwise, register C is set to 0.
  */
 class Gtrr : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 if (registers[instruction.inputOne] > registers[instruction.inputTwo])
@@ -261,7 +268,7 @@ if value A is equal to register B. Otherwise, register C is set to 0.
 
  */
 class Eqir : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 if (instruction.inputOne == registers[instruction.inputTwo])
@@ -286,7 +293,7 @@ if register A is equal to value B. Otherwise, register C is set to 0.
 
  */
 class Eqri : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 if (registers[instruction.inputOne] == instruction.inputTwo)
@@ -311,7 +318,7 @@ if register A is equal to register B. Otherwise, register C is set to 0.
 
  */
 class Eqrr : Operation {
-    override fun applyTo(instruction: Instruction, registers: List<Int>): List<Int> {
+    override fun applyTo(instruction: ElfsemblyInstruction, registers: List<Int>): List<Int> {
         return registers.mapIndexed { i, r ->
             if (i == instruction.output) {
                 if (registers[instruction.inputOne] == registers[instruction.inputTwo])

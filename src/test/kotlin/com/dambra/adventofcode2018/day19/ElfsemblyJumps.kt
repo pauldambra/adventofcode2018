@@ -1,10 +1,15 @@
 package com.dambra.adventofcode2018.day19
 
+import com.dambra.adventofcode2018.day16.ElfsemblyInstruction
+import com.dambra.adventofcode2018.day16.Instruction.Companion.from
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import com.dambra.adventofcode2018.day16.Instruction
+import com.dambra.adventofcode2018.day16.Operation
+import com.dambra.adventofcode2018.day16.OperationMatcher
 
 internal class ElfsemblyJumps {
-    val puzzleInput = """
+    private val puzzleInput = """
 #ip 5
 addi 5 16 5
 seti 1 1 2
@@ -44,7 +49,7 @@ seti 0 9 0
 seti 0 9 5
     """.trimIndent()
 
-    val exampleInput = """
+    private val exampleInput = """
 #ip 0
 seti 5 0 1
 seti 6 0 2
@@ -61,11 +66,57 @@ seti 9 0 5
         val finalRegisters = jp.untilHalts()
         assertThat(finalRegisters[0]).isEqualTo(6)
     }
+
+    @Test
+    fun `puzzle input halts with something in register 0`() {
+        val jp = JumpingProgram(puzzleInput)
+        val finalRegisters = jp.untilHalts()
+        assertThat(finalRegisters[0]).isEqualTo(6)
+    }
 }
 
-class JumpingProgram(program: String) {
+data class DecodedInstruction(
+    val operation: Operation,
+    override val inputOne: Int,
+    override val inputTwo: Int,
+    override val output: Int
+) :
+    ElfsemblyInstruction {
+
+
+    companion object {
+        fun from(s: String): DecodedInstruction {
+            val parts = s.split(" ")
+            val opcode = parts[0]
+            val operation = OperationMatcher.operations[opcode]!!
+
+            val (b, c, d) = parts.drop(1).map { it.toInt() }
+
+            return DecodedInstruction(operation, b, c, d)
+        }
+    }
+}
+
+class JumpingProgram(private val program: String) {
     fun untilHalts(): List<Int> {
-        return emptyList()
+        var registers = mutableListOf(0, 0, 0, 0, 0, 0)
+
+        val lines = program.split("\n")
+        val instructionPointerIndex = lines.first().split(" ").last().trim().toInt()
+        val instructions = lines.drop(1).map(DecodedInstruction.Companion::from)
+
+        var instructionPointer: Int = registers[instructionPointerIndex]
+        while (instructionPointer < instructions.size) {
+            registers[instructionPointerIndex] = instructionPointer
+
+            val next = instructions[instructionPointer]
+            registers = next.operation.applyTo(next, registers).toMutableList()
+
+            instructionPointer = registers[instructionPointerIndex]
+            instructionPointer += 1
+        }
+
+        return registers
     }
 
 }
