@@ -71,6 +71,13 @@ seti 9 0 5
     fun `puzzle input halts with something in register 0`() {
         val jp = JumpingProgram(puzzleInput)
         val finalRegisters = jp.untilHalts()
+        assertThat(finalRegisters[0]).isEqualTo(960)
+    }
+
+    @Test
+    fun `puzzle input halts with something in register 0 for part 2`() {
+        val jp = JumpingProgram(puzzleInput, 1)
+        val finalRegisters = jp.untilHalts()
         assertThat(finalRegisters[0]).isEqualTo(6)
     }
 }
@@ -97,9 +104,9 @@ data class DecodedInstruction(
     }
 }
 
-class JumpingProgram(private val program: String) {
+class JumpingProgram(private val program: String, private val registerZeroStartingValue: Int = 0) {
     fun untilHalts(): List<Int> {
-        var registers = mutableListOf(0, 0, 0, 0, 0, 0)
+        var registers = mutableListOf(registerZeroStartingValue, 0, 0, 0, 0, 0)
 
         val lines = program.split("\n")
         val instructionPointerIndex = lines.first().split(" ").last().trim().toInt()
