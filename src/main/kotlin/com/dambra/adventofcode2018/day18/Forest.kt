@@ -1,7 +1,7 @@
 package com.dambra.adventofcode2018.day18
 
 class Forest(map: String) {
-    private var acres: MutableMap<ForestCoord, Acre>
+    private var acres: MutableMap<Coord, Acre>
     private val maxX: Int
     private val maxY: Int
 
@@ -17,10 +17,10 @@ class Forest(map: String) {
     }
 
     init {
-        val xs = mutableMapOf<ForestCoord, Acre>()
+        val xs = mutableMapOf<Coord, Acre>()
         map.split("\n").forEachIndexed { y, row ->
             row.split("").drop(1).dropLast(1).forEachIndexed { x, s ->
-                val coord = ForestCoord(x, y)
+                val coord = Coord(x, y)
                 xs[coord] = Acre(s)
             }
         }
@@ -30,7 +30,7 @@ class Forest(map: String) {
     }
 
     private val seenStates = mutableSetOf(acres)
-    private var firstRepeatingState: MutableMap<ForestCoord, Acre>? = null
+    private var firstRepeatingState: MutableMap<Coord, Acre>? = null
     private var firstRepeatAt = 0
 
     fun after(minutes: Int): String {
@@ -38,7 +38,7 @@ class Forest(map: String) {
         var minute = 0
         while (minute < minutes) {
 
-            acres = acres.map { x: Map.Entry<ForestCoord, Acre> ->
+            acres = acres.map { x: Map.Entry<Coord, Acre> ->
 
                 val surroundingTypes = x.key
                     .surroundingCoords()
@@ -75,11 +75,11 @@ class Forest(map: String) {
         return print(acres)
     }
 
-    private fun print(forest: Map<ForestCoord, Acre>): String {
+    private fun print(forest: Map<Coord, Acre>): String {
         var s = ""
         (0..maxY).forEach { y ->
             (0..maxX).forEach { x ->
-                s += forest[ForestCoord(x, y)]!!.type
+                s += forest[Coord(x, y)]!!.type
             }
             s += "\n"
         }
